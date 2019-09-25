@@ -1,0 +1,3 @@
+git clone nserc_scraper .
+python3.7 -m venv .
+pip install -r requirements.txt
