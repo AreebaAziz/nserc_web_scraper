@@ -20,8 +20,10 @@ To install, open a terminal and do the following steps:
 Note: If your default ``python`` is 3.7, you don't need to add the 3.7 after ``python``.
 Note 2: If you're on Windows, you will need to do ``. Scripts/activate`` instead of ``. bin/activate``.
 
-``python3.7 -m venv .``
-``. bin/activate``
+```
+python3.7 -m venv .
+. bin/activate
+```
 
 3. Install Python dependencies:
 
