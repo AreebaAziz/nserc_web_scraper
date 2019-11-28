@@ -29,7 +29,7 @@ def get_nserc_links(year_from:int, year_to:int):
 
     # --------------------------------------------------------------
     # ********* START UP CHROME AND GO TO THE NSERC WEBSITE ********
-    driver = webdriver.Chrome(executable_path=r'/Users/kevin/Desktop/chromedriver')
+    driver = webdriver.Chrome(executable_path=r'../bin/chromedriver')
     driver.get(NSERC_URL)
 
 
@@ -57,20 +57,24 @@ def get_nserc_links(year_from:int, year_to:int):
 
     # -------------------------------------------------
     # ********* NOW ON THE SEARCH RESULTS PAGE ********
-    time.sleep(15)
+    time.sleep(6)
+
+    # Select 100 rows in the dropdown
+    Select(driver.find_element_by_name('result_length')).select_by_value("100")
+    time.sleep(6)
 
     # Click on last button and go to last page
     driver.find_element_by_css_selector('#result_last').click()
-    time.sleep(15)
+    time.sleep(6)
 
     # Get the number of pages by finding the value of the last page
     pages = driver.find_element_by_css_selector('.paginate_active').get_attribute('innerHTML')
     pages = int(pages)
-    time.sleep(15)
+    time.sleep(6)
 
     # Click on first button and go back to the first page
     driver.find_element_by_css_selector('#result_first').click()
-    time.sleep(15)
+    time.sleep(6)
 
     # Establish variables for the while loop
     linkList=[]
@@ -91,10 +95,10 @@ def get_nserc_links(year_from:int, year_to:int):
 
         # Click on next page button, let it load, and then add to the counter
         driver.find_element_by_css_selector('#result_next').click()
-        time.sleep(15)
+        time.sleep(6)
         onPage+=1
 
-    time.sleep(15)
+    time.sleep(6)
 
     driver.quit()
 
@@ -272,3 +276,8 @@ def run(year_from:int, year_to:int):
     print("[ getting the details data for each award ]")
     data_output_file = get_details_data(nserc_links_outputfile)
     print("[ done getting details data, saved to {} ]".format(data_output_file))
+
+def run_concurrently(years):
+    import threading
+    for year in years:
+        threading.Thread(target=run, args=(year, year)).start()

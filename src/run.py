@@ -4,6 +4,7 @@ usage: python run.py <WHAT_TO_RUN> [ARGS]
 WHAT_TO_RUN can be:
     [1]  details_scraper <file/to/search-results-data.json> <file/to/output.csv>
     [2]  scrape_all_awards <year_from> <year_to> 
+    [3]  scrape_awards_4yrs <year1> <year2> <year3> <year4>
 '''
 
 import sys
@@ -13,7 +14,25 @@ import scrape_all_awards as scrape_all_awards_m
 FUNCTION_MAP = {
 	'1': 'details_scraper',
 	'2': 'scrape_all_awards',
+	'3': 'scrape_awards_4yrs',
 }
+
+def scrape_awards_4yrs():
+	print("[ running scrape_awards_4yrs ]")
+
+	# validate arguments - we need 4 args for this function. 4 + 2 = 6 required args
+	if (len(sys.argv) < 6):
+		_usage_error("not enough arguments for this function.")
+
+	try:
+		year1 = int(sys.argv[2])
+		year2 = int(sys.argv[3])
+		year3 = int(sys.argv[4])
+		year4 = int(sys.argv[5])
+	except ValueError:
+		_usage_error("years must be integer values.")
+
+	scrape_all_awards_m.run_concurrently([year1, year2, year3, year4])
 
 def scrape_all_awards():
 	print("[ running scrape_all_awards ]")
