@@ -21,6 +21,7 @@ def _get_timestamp():
     return "" + str(t.year) + "-" + str(t.month) + "-" + str(t.day) + "_" + str(t.hour) + str(t.minute)
 
 def get_nserc_links(year_from:int, year_to:int):
+    print("[ getting the NSERC links ]")
 
     timestamp = _get_timestamp()
     links_output_file = LINKS_OUTPUT_FILE.format(year_from=year_from, year_to=year_to, timestamp=timestamp)
@@ -109,6 +110,8 @@ def get_nserc_links(year_from:int, year_to:int):
     nsercLinks.to_excel(writer,sheet_name='Award Summary Links',index=False)
     writer.save()
 
+    print("[ getting NSERC links done, data saved to {} ]".format(nserc_links_outputfile))
+
     return links_output_file
 
 def _cleanTXT(string):
@@ -120,6 +123,7 @@ def _cleanTXT(string):
     return text
 
 def get_details_data(nserc_links_outputfile:str):
+    print("[ getting the details data for each award ]")
     data_output_file = nserc_links_outputfile.replace("NSERCLinks_", "AwardsOutput_")
     writer = pd.ExcelWriter(data_output_file, engine='xlsxwriter')
     data = pd.read_excel(nserc_links_outputfile,
@@ -267,15 +271,13 @@ def get_details_data(nserc_links_outputfile:str):
     nserc.to_excel(writer,sheet_name='Award Summaries',index=False)
     writer.save()
 
+    print("[ done getting details data, saved to {} ]".format(data_output_file))
+
     return data_output_file
 
 def run(year_from:int, year_to:int): 
-    print("[ getting the NSERC links ]")
     nserc_links_outputfile = get_nserc_links(year_from, year_to)
-    print("[ getting NSERC links done, data saved to {} ]".format(nserc_links_outputfile))
-    print("[ getting the details data for each award ]")
     data_output_file = get_details_data(nserc_links_outputfile)
-    print("[ done getting details data, saved to {} ]".format(data_output_file))
 
 def run_concurrently(years):
     import threading

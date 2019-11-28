@@ -5,6 +5,7 @@ WHAT_TO_RUN can be:
     [1]  details_scraper <file/to/search-results-data.json> <file/to/output.csv>
     [2]  scrape_all_awards <year_from> <year_to> 
     [3]  scrape_awards_4yrs <year1> <year2> <year3> <year4>
+    [4]  scrape_details_from_links <file/to/nserc_links.xlsx>
 '''
 
 import sys
@@ -15,7 +16,19 @@ FUNCTION_MAP = {
 	'1': 'details_scraper',
 	'2': 'scrape_all_awards',
 	'3': 'scrape_awards_4yrs',
+	'4': 'scrape_details_from_links',
 }
+
+def scrape_details_from_links():
+	print("[ running scrape_details_from_links ]")
+
+	# validate arguments - we need 1 args for this function. 1 + 2 = 3 required args
+	if (len(sys.argv) < 3):
+		_usage_error("not enough arguments for this function.")
+
+	input_file = sys.argv[2]
+
+	scrape_all_awards_m.get_details_data(input_file)
 
 def scrape_awards_4yrs():
 	print("[ running scrape_awards_4yrs ]")
