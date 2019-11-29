@@ -3,9 +3,9 @@ usage: python run.py <WHAT_TO_RUN> [ARGS]
 
 WHAT_TO_RUN can be:
     [1]  details_scraper <file/to/search-results-data.json> <file/to/output.csv>
-    [2]  scrape_all_awards <year_from> <year_to> 
+    [2]  scrape_all_awards <year_from> <year_to>
     [3]  scrape_awards_4yrs <year1> <year2> <year3> <year4>
-    [4]  scrape_details_from_links <file/to/nserc_links.xlsx>
+    [4]  scrape_details_from_links <file/to/nserc_links.xlsx> [backup_file.xlsx]
 '''
 
 import sys
@@ -28,7 +28,11 @@ def scrape_details_from_links():
 
 	input_file = sys.argv[2]
 
-	scrape_all_awards_m.get_details_data(input_file)
+	backup_file = None
+	if (len(sys.argv) == 4):
+		backup_file = sys.argv[3]
+
+	scrape_all_awards_m.get_details_data(input_file, backup_file)
 
 def scrape_awards_4yrs():
 	print("[ running scrape_awards_4yrs ]")

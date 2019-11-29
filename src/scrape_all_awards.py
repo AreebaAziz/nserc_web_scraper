@@ -140,12 +140,17 @@ def _cleanTXT(string):
     text = text.strip()
     return text
 
-def get_details_data(nserc_links_outputfile:str):
+def get_details_data(nserc_links_outputfile:str, from_backup:str=None):
     global data_output_file, awardIDs, projTitles, amounts, programs, committees, coResearchers, compYears, fiscalYears, projLeads, schools, depts, provs, instals, researchSubs, areaApps, partners
 
     print("[ getting the details data for each award ]")
     data_output_file = nserc_links_outputfile.replace("NSERCLinks_", "AwardsOutput_")
     data = pd.read_excel(nserc_links_outputfile, sheet_name="Award Summary Links",dtype=str)
+
+    # if we want to read from a backup excel file, then skip the rows that we've already done
+    if from_backup is not None:
+        backup_data = pd.read_excel(from_backup)
+        data = data[len(backup_data.values):]
 
     for index,row in data.iterrows():
         html = requests.get(row["Link"])
