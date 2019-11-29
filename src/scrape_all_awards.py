@@ -16,6 +16,24 @@ from selenium.webdriver.firefox.options import Options
 LINKS_OUTPUT_FILE = "tmp/NSERCLinks_{year_from}-{year_to}_{timestamp}.xlsx"
 NSERC_URL = "https://www.nserc-crsng.gc.ca/ase-oro/Results-Resultats_eng.asp"
 
+awardIDs=[]
+projTitles=[]
+amounts=[]
+programs=[]
+committees=[]
+coResearchers=[]
+compYears=[]
+fiscalYears=[]
+projLeads=[]
+schools=[]
+depts=[]
+provs=[]
+instals=[]
+researchSubs=[]
+areaApps=[]
+partners=[]
+data_output_file=None
+
 def _get_timestamp():
     t = datetime.now()
     return "" + str(t.year) + "-" + str(t.month) + "-" + str(t.day) + "_" + str(t.hour) + str(t.minute)
@@ -123,29 +141,11 @@ def _cleanTXT(string):
     return text
 
 def get_details_data(nserc_links_outputfile:str):
+    global data_output_file, awardIDs, projTitles, amounts, programs, committees, coResearchers, compYears, fiscalYears, projLeads, schools, depts, provs, instals, researchSubs, areaApps, partners
+
     print("[ getting the details data for each award ]")
     data_output_file = nserc_links_outputfile.replace("NSERCLinks_", "AwardsOutput_")
-    writer = pd.ExcelWriter(data_output_file, engine='xlsxwriter')
-    data = pd.read_excel(nserc_links_outputfile,
-                         sheet_name="Award Summary Links",dtype=str)
-
-    awardIDs=[]
-    projTitles=[]
-    amounts=[]
-    programs=[]
-    committees=[]
-    coResearchers=[]
-    compYears=[]
-    fiscalYears=[]
-    projLeads=[]
-    schools=[]
-    depts=[]
-    provs=[]
-    instals=[]
-    researchSubs=[]
-    areaApps=[]
-    partners=[]
-
+    data = pd.read_excel(nserc_links_outputfile, sheet_name="Award Summary Links",dtype=str)
 
     for index,row in data.iterrows():
         html = requests.get(row["Link"])
@@ -248,32 +248,38 @@ def get_details_data(nserc_links_outputfile:str):
         projTitle = _cleanTXT(projTitle)
         projTitles.append(projTitle)
 
-    nserc = pd.DataFrame(
-        {'Award ID': awardIDs,
-         'Competition Year': compYears,
-         'Fiscal Year': fiscalYears,
-         'Program': programs,
-         'Selection Committee': committees,
-         'Amount': amounts,
-         'Installment': instals,
-         'Research Subject': researchSubs,
-         'Area of Application': areaApps,
-         'Project Title': projTitles,
-         'Project Lead Name': projLeads,
-         'Co-Researchers': coResearchers,
-         'Institution': schools,
-         'Department': depts,
-         'Province': provs,
-         'Partners': partners
-        }
-    )
-
-    nserc.to_excel(writer,sheet_name='Award Summaries',index=False)
-    writer.save()
-
+    _save_data()
     print("[ done getting details data, saved to {} ]".format(data_output_file))
 
     return data_output_file
+
+def _save_data():
+    global data_output_file, awardIDs, projTitles, amounts, programs, committees, coResearchers, compYears, fiscalYears, projLeads, schools, depts, provs, instals, researchSubs, areaApps, partners
+
+    if data_output_file is not None:
+        writer = pd.ExcelWriter(data_output_file, engine='xlsxwriter')
+        nserc = pd.DataFrame(
+            {'Award ID': awardIDs,
+             'Competition Year': compYears,
+             'Fiscal Year': fiscalYears,
+             'Program': programs,
+             'Selection Committee': committees,
+             'Amount': amounts,
+             'Installment': instals,
+             'Research Subject': researchSubs,
+             'Area of Application': areaApps,
+             'Project Title': projTitles,
+             'Project Lead Name': projLeads,
+             'Co-Researchers': coResearchers,
+             'Institution': schools,
+             'Department': depts,
+             'Province': provs,
+             'Partners': partners
+            }
+        )
+
+        nserc.to_excel(writer,sheet_name='Award Summaries',index=False)
+        writer.save()
 
 def run(year_from:int, year_to:int): 
     nserc_links_outputfile = get_nserc_links(year_from, year_to)
@@ -283,3 +289,6 @@ def run_concurrently(years):
     import threading
     for year in years:
         threading.Thread(target=run, args=(year, year)).start()
+
+import atexit
+atexit.register(_save_data)
