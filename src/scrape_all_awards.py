@@ -128,7 +128,7 @@ def get_nserc_links(year_from:int, year_to:int):
     nsercLinks.to_excel(writer,sheet_name='Award Summary Links',index=False)
     writer.save()
 
-    print("[ getting NSERC links done, data saved to {} ]".format(nserc_links_outputfile))
+    print("[ getting NSERC links done, data saved to {} ]".format(links_output_file))
 
     return links_output_file
 
